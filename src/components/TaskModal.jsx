@@ -85,10 +85,22 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const [error, setError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
-    onClose();
+    setError('');
+    setIsSaving(true);
+    try {
+      await onSave(formData);
+      onClose();
+    } catch (err) {
+      console.error(err);
+      setError('Hubo un error al guardar la tarea. Revisa la consola o los permisos de Firebase.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -98,6 +110,11 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
           <h2 className="modal-title">{task ? 'Editar Tarea' : 'Nueva Tarea'}</h2>
           <button className="modal-close" onClick={onClose}><X size={24} /></button>
         </div>
+        {error && (
+          <div style={{ backgroundColor: '#f8d7da', color: '#721c24', padding: '1rem', borderRadius: '4px', marginBottom: '1rem' }}>
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label">Título</label>

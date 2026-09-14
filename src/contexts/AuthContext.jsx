@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [filterUser, setFilterUser] = useState('');
 
-  const adminEmails = ['gnoves@nowvertical-es.com', 'csosa@nowvertical-es.com'];
+  const adminEmails = ['gnoves@nowvertical-es.com', 'csosa@nowvertical-es.com', 'sosacristhiansebas@gmail.com'];
   const isAdmin = currentUser?.email ? adminEmails.includes(currentUser.email) : false;
 
   const loginWithGoogle = () => {
