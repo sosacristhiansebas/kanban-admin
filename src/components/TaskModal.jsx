@@ -21,6 +21,8 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
   });
 
   const [newSubtask, setNewSubtask] = useState('');
+  const [error, setError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (task) {
@@ -84,9 +86,6 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
       subtasks: prev.subtasks.filter(st => st.id !== subId)
     }));
   };
-
-  const [error, setError] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

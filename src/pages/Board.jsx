@@ -36,9 +36,9 @@ const Board = () => {
 
   const handleSaveTask = (taskData) => {
     if (editingTask) {
-      updateTask(editingTask.id, taskData);
+      return updateTask(editingTask.id, taskData);
     } else {
-      addTask(taskData);
+      return addTask(taskData);
     }
   };
 
