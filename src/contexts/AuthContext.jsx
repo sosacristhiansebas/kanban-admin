@@ -23,16 +23,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    // Para modo de prueba local (sin credenciales de Firebase configuradas):
-    if (!import.meta.env.VITE_FIREBASE_API_KEY) {
-      setCurrentUser({
-        displayName: 'Gonza 🫡',
-        email: 'gonza@nowvertical.com',
-        uid: '12345'
-      });
-      setLoading(false);
-      return () => {};
-    }
+    // Autenticación de Firebase
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
