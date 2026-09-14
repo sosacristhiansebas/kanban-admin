@@ -1,0 +1,69 @@
+import React from 'react';
+import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
+import { LayoutDashboard, Calendar as CalendarIcon, LogOut } from 'lucide-react';
+import Login from './pages/Login';
+import Board from './pages/Board';
+import CalendarView from './pages/CalendarView';
+
+const PrivateRoute = ({ children }) => {
+  const { currentUser } = useAuth();
+  if (!currentUser) return <Navigate to="/login" />;
+  return children;
+};
+
+const App = () => {
+  const { currentUser, logout } = useAuth();
+  const location = useLocation();
+
+  return (
+    <div className="app-container">
+      {currentUser && (
+        <nav className="navbar">
+          <div className="navbar-brand">Team Administración y Finanzas</div>
+          <div className="navbar-nav">
+            <Link 
+              to="/" 
+              className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
+            >
+              <LayoutDashboard size={18} /> Tablero
+            </Link>
+            <Link 
+              to="/calendar" 
+              className={`nav-link ${location.pathname === '/calendar' ? 'active' : ''}`}
+            >
+              <CalendarIcon size={18} /> Calendario
+            </Link>
+            <button className="btn btn-secondary" onClick={logout} style={{ padding: '0.4rem 0.8rem', fontSize: '0.9rem' }}>
+              <LogOut size={16} /> Salir
+            </button>
+          </div>
+        </nav>
+      )}
+
+      <main className="main-content">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route 
+            path="/" 
+            element={
+              <PrivateRoute>
+                <Board />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/calendar" 
+            element={
+              <PrivateRoute>
+                <CalendarView />
+              </PrivateRoute>
+            } 
+          />
+        </Routes>
+      </main>
+    </div>
+  );
+};
+
+export default App;
