@@ -78,7 +78,7 @@ const CalendarView = () => {
             <div 
               key={day.toString()} 
               style={{ 
-                backgroundColor: isSameMonth(day, monthStart) ? 'var(--surface-color)' : '#f8f9fa',
+                backgroundColor: isSameMonth(day, monthStart) ? 'var(--surface-color)' : 'rgba(255, 255, 255, 0.02)',
                 minHeight: '120px',
                 padding: '0.5rem',
                 display: 'flex',

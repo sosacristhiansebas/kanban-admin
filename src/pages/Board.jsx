@@ -98,7 +98,7 @@ const Board = () => {
             style={{ 
               flex: '1', 
               minWidth: '300px', 
-              backgroundColor: '#f1f3f5', 
+              backgroundColor: 'rgba(255, 255, 255, 0.03)', 
               borderRadius: 'var(--border-radius)', 
               padding: '1rem',
               display: 'flex',
@@ -117,7 +117,7 @@ const Board = () => {
                 onDragStart={(e) => handleDragStart(e, task.id)}
                 onClick={() => openEditTask(task)}
                 style={{ 
-                  backgroundColor: 'white', 
+                  backgroundColor: 'var(--surface-color)', 
                   padding: '1rem', 
                   borderRadius: 'var(--border-radius)', 
                   boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
@@ -137,7 +137,7 @@ const Board = () => {
                   {task.description}
                 </p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem' }}>
-                  <span style={{ backgroundColor: '#e2e8f0', padding: '0.2rem 0.5rem', borderRadius: '12px', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <span style={{ backgroundColor: 'var(--bg-color)', padding: '0.2rem 0.5rem', borderRadius: '12px', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {task.assignees?.map(a => users.find(u => u.email === a)?.displayName || a).join(', ') || 'Sin asignar'}
                   </span>
                   
