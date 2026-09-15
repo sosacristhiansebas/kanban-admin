@@ -1,12 +1,12 @@
 :root {
-  --primary-color: #0d1b2a; /* Deep Navy Blue */
+  --primary-color: #03131A; /* Dark Navbar */
   --secondary-color: #00b4d8; /* Bright Blue/Teal */
   --accent-color: #48cae4;
-  --bg-color: #f8f9fa;
-  --text-primary: #212529;
-  --text-secondary: #6c757d;
-  --border-color: #e9ecef;
-  --surface-color: #ffffff;
+  --bg-color: #061D26; /* Dark slate background */
+  --text-primary: #e0e6ed;
+  --text-secondary: #94a3b8;
+  --border-color: #1a3644;
+  --surface-color: #0A232D; /* Lighter slate for cards/modals */
   
   --success: #28a745;
   --warning: #ffc107;
@@ -126,12 +126,13 @@ button {
 }
 
 .btn-secondary {
-  background-color: #e9ecef;
+  background-color: var(--surface-color);
   color: var(--text-primary);
+  border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover {
-  background-color: #dee2e6;
+  background-color: var(--border-color);
 }
 
 .btn-danger {
@@ -163,6 +164,8 @@ button {
   font-family: inherit;
   font-size: 1rem;
   transition: border-color 0.2s;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
 }
 
 .form-control:focus {
