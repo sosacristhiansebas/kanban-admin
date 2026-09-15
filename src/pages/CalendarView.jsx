@@ -28,7 +28,10 @@ const CalendarView = () => {
   // Filter logic
   const visibleTasks = tasks.filter(task => {
     const assignees = task.assignees || [];
-    return filterUser ? assignees.includes(filterUser) : true;
+    if (isAdmin) {
+      return filterUser ? assignees.includes(filterUser) : true;
+    }
+    return currentUser?.email ? assignees.includes(currentUser.email) : false;
   });
 
   return (

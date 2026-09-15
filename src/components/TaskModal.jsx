@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-
-const TEAM_MEMBERS = [
-  'Gonza 🫡', 'Zahi 🐾', 'Edu 💯', 'Mai 🏝️', 
-  'Dámaso 🐉', 'Me 💙', 'Sabri 😎', 'Flor 🤗'
-];
+import { useUsers } from '../hooks/useUsers';
 
 const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
   const { isAdmin, currentUser } = useAuth();
+  const { users } = useUsers();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -35,7 +32,7 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
       setFormData({
         title: '',
         description: '',
-        assignees: currentUser?.displayName ? [currentUser.displayName] : [],
+        assignees: currentUser?.email ? [currentUser.email] : [],
         etaStart: '',
         etaEnd: '',
         driveLink: '',
@@ -139,14 +136,14 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
           <div className="form-group">
             <label className="form-label">Responsables</label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', maxHeight: '120px', overflowY: 'auto', padding: '0.5rem', border: '1px solid var(--border-color)', borderRadius: '4px' }}>
-              {TEAM_MEMBERS.map(member => (
-                <label key={member} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+              {users.map(user => (
+                <label key={user.email} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
                   <input 
                     type="checkbox" 
-                    checked={formData.assignees.includes(member)}
-                    onChange={() => handleAssigneeChange(member)}
+                    checked={formData.assignees.includes(user.email)}
+                    onChange={() => handleAssigneeChange(user.email)}
                   />
-                  {member}
+                  {user.displayName || user.email}
                 </label>
               ))}
             </div>

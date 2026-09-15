@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useTasks } from '../hooks/useTasks';
 import { useAuth } from '../contexts/AuthContext';
+import { useUsers } from '../hooks/useUsers';
 import TaskModal from '../components/TaskModal';
 import { Plus, Link as LinkIcon, Calendar, CheckSquare } from 'lucide-react';
 
 const Board = () => {
   const { tasks, loading, addTask, updateTask, deleteTask } = useTasks();
+  const { users } = useUsers();
   const { isAdmin, currentUser, filterUser, setFilterUser } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
@@ -55,7 +57,10 @@ const Board = () => {
   // Filter logic
   const visibleTasks = tasks.filter(task => {
     const assignees = task.assignees || [];
-    return filterUser ? assignees.includes(filterUser) : true;
+    if (isAdmin) {
+      return filterUser ? assignees.includes(filterUser) : true;
+    }
+    return currentUser?.email ? assignees.includes(currentUser.email) : false;
   });
 
   return (
@@ -72,14 +77,9 @@ const Board = () => {
                 onChange={(e) => setFilterUser(e.target.value)}
               >
                 <option value="">Todos los integrantes</option>
-                <option value="Gonza 🫡">Gonza 🫡</option>
-                <option value="Zahi 🐾">Zahi 🐾</option>
-                <option value="Edu 💯">Edu 💯</option>
-                <option value="Mai 🏝️">Mai 🏝️</option>
-                <option value="Dámaso 🐉">Dámaso 🐉</option>
-                <option value="Me 💙">Me 💙</option>
-                <option value="Sabri 😎">Sabri 😎</option>
-                <option value="Flor 🤗">Flor 🤗</option>
+                {users.map(u => (
+                  <option key={u.email} value={u.email}>{u.displayName || u.email}</option>
+                ))}
               </select>
             </div>
           )}
@@ -138,7 +138,7 @@ const Board = () => {
                 </p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem' }}>
                   <span style={{ backgroundColor: '#e2e8f0', padding: '0.2rem 0.5rem', borderRadius: '12px', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {task.assignees?.join(', ') || 'Sin asignar'}
+                    {task.assignees?.map(a => users.find(u => u.email === a)?.displayName || a).join(', ') || 'Sin asignar'}
                   </span>
                   
                   {task.etaStart && (
