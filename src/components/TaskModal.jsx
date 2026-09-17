@@ -18,6 +18,7 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
   });
 
   const [newSubtask, setNewSubtask] = useState('');
+  const [newComment, setNewComment] = useState('');
   const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
@@ -26,7 +27,8 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
       setFormData({
         ...task,
         assignees: task.assignees || [],
-        subtasks: task.subtasks || []
+        subtasks: task.subtasks || [],
+        comments: task.comments || []
       });
     } else {
       setFormData({
@@ -37,7 +39,8 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
         etaEnd: '',
         driveLink: '',
         status: 'todo',
-        subtasks: []
+        subtasks: [],
+        comments: []
       });
     }
   }, [task, currentUser]);
@@ -81,6 +84,29 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
     setFormData(prev => ({
       ...prev,
       subtasks: prev.subtasks.filter(st => st.id !== subId)
+    }));
+  };
+
+  const handleAddComment = (e) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+    const comment = {
+      id: Date.now().toString(),
+      text: newComment,
+      author: currentUser?.displayName || currentUser?.email || 'Usuario',
+      timestamp: new Date().toISOString()
+    };
+    setFormData(prev => ({
+      ...prev,
+      comments: [...(prev.comments || []), comment]
+    }));
+    setNewComment('');
+  };
+
+  const handleDeleteComment = (commentId) => {
+    setFormData(prev => ({
+      ...prev,
+      comments: (prev.comments || []).filter(c => c.id !== commentId)
     }));
   };
 
@@ -189,7 +215,7 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {formData.subtasks.map(st => (
-                <div key={st.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                <div key={st.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem', backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)', borderRadius: '4px' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', flex: 1 }}>
                     <input 
                       type="checkbox" 
@@ -205,6 +231,40 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
                   </button>
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Comentarios</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem', maxHeight: '150px', overflowY: 'auto' }}>
+              {(formData.comments || []).map(comment => (
+                <div key={comment.id} style={{ padding: '0.5rem', backgroundColor: 'var(--bg-color)', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.3rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                    <strong>{comment.author}</strong>
+                    <span style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      {new Date(comment.timestamp).toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' })}
+                      <button type="button" style={{ background: 'none', border: 'none', color: '#dc3545', cursor: 'pointer', padding: 0, display: 'flex' }} onClick={() => handleDeleteComment(comment.id)}>
+                        <X size={14} />
+                      </button>
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.9rem' }}>{comment.text}</div>
+                </div>
+              ))}
+              {(formData.comments || []).length === 0 && (
+                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>No hay comentarios aún.</div>
+              )}
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <input 
+                type="text" 
+                className="form-control" 
+                placeholder="Escribe un comentario..." 
+                value={newComment}
+                onChange={e => setNewComment(e.target.value)}
+                onKeyPress={e => e.key === 'Enter' && handleAddComment(e)}
+              />
+              <button type="button" className="btn btn-secondary" onClick={handleAddComment}>Enviar</button>
             </div>
           </div>
 

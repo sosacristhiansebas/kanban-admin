@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useUsers } from '../hooks/useUsers';
 import TaskModal from '../components/TaskModal';
 import { Plus, Link as LinkIcon, Calendar, CheckSquare } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 const Board = () => {
   const { tasks, loading, addTask, updateTask, deleteTask } = useTasks();
@@ -20,27 +21,12 @@ const Board = () => {
     { id: 'done', title: 'Hecho (Historial)' }
   ];
 
-  const handleDragStart = (e, taskId) => {
-    e.dataTransfer.setData('taskId', taskId);
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e, status) => {
-    e.preventDefault();
-    const taskId = e.dataTransfer.getData('taskId');
-    if (taskId) {
-      updateTask(taskId, { status });
-    }
-  };
-
   const handleSaveTask = (taskData) => {
     if (editingTask) {
       return updateTask(editingTask.id, taskData);
     } else {
-      return addTask(taskData);
+      // Al agregar una nueva tarea, le damos un orden muy bajo para que aparezca arriba
+      return addTask({ ...taskData, order: Date.now() * -1 }); 
     }
   };
 
@@ -62,6 +48,63 @@ const Board = () => {
     }
     return currentUser?.email ? assignees.includes(currentUser.email) : false;
   });
+
+  const sortedVisibleTasks = [...visibleTasks].sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  const onDragEnd = (result) => {
+    const { source, destination, draggableId } = result;
+
+    if (!destination) return;
+
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    ) {
+      return;
+    }
+
+    const startColumn = source.droppableId;
+    const finishColumn = destination.droppableId;
+    
+    if (startColumn === finishColumn) {
+      const columnTasks = sortedVisibleTasks.filter(t => t.status === startColumn);
+      const newTasks = Array.from(columnTasks);
+      const [movedTask] = newTasks.splice(source.index, 1);
+      newTasks.splice(destination.index, 0, movedTask);
+      
+      let newOrder = 0;
+      if (newTasks.length > 1) {
+        if (destination.index === 0) {
+          newOrder = (newTasks[1].order || 0) - 1000;
+        } else if (destination.index === newTasks.length - 1) {
+          newOrder = (newTasks[newTasks.length - 2].order || 0) + 1000;
+        } else {
+          newOrder = ((newTasks[destination.index - 1].order || 0) + (newTasks[destination.index + 1].order || 0)) / 2;
+        }
+      }
+      
+      updateTask(draggableId, { order: newOrder });
+    } else {
+      // moving to different column
+      const finishTasks = sortedVisibleTasks.filter(t => t.status === finishColumn);
+      const newFinishTasks = Array.from(finishTasks);
+      const movedTask = sortedVisibleTasks.find(t => t.id === draggableId);
+      newFinishTasks.splice(destination.index, 0, movedTask);
+      
+      let newOrder = 0;
+      if (newFinishTasks.length > 1) {
+        if (destination.index === 0) {
+          newOrder = (newFinishTasks[1].order || 0) - 1000;
+        } else if (destination.index === newFinishTasks.length - 1) {
+          newOrder = (newFinishTasks[newFinishTasks.length - 2].order || 0) + 1000;
+        } else {
+          newOrder = ((newFinishTasks[destination.index - 1].order || 0) + (newFinishTasks[destination.index + 1].order || 0)) / 2;
+        }
+      }
+      
+      updateTask(draggableId, { status: finishColumn, order: newOrder });
+    }
+  };
 
   return (
     <div>
@@ -89,89 +132,102 @@ const Board = () => {
         </button>
       </div>
 
-      <div style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '1rem' }}>
-        {columns.map(col => (
-          <div 
-            key={col.id}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, col.id)}
-            style={{ 
-              flex: '1', 
-              minWidth: '300px', 
-              backgroundColor: 'rgba(255, 255, 255, 0.03)', 
-              borderRadius: 'var(--border-radius)', 
-              padding: '1rem',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1rem'
-            }}
-          >
-            <h3 style={{ fontSize: '1.1rem', margin: '0 0 0.5rem 0', color: 'var(--text-secondary)' }}>
-              {col.title} ({visibleTasks.filter(t => t.status === col.id).length})
-            </h3>
-            
-            {visibleTasks.filter(t => t.status === col.id).map(task => (
-              <div 
-                key={task.id}
-                draggable
-                onDragStart={(e) => handleDragStart(e, task.id)}
-                onClick={() => openEditTask(task)}
-                style={{ 
-                  backgroundColor: 'var(--surface-color)', 
-                  padding: '1rem', 
-                  borderRadius: 'var(--border-radius)', 
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                  cursor: 'pointer',
-                  borderLeft: `4px solid ${col.id === 'todo' ? '#ffb3ba' : col.id === 'inprogress' ? '#ffffba' : '#baffc9'}`
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                  <strong>{task.title}</strong>
-                  {task.driveLink && (
-                    <a href={task.driveLink} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)' }} onClick={e => e.stopPropagation()}>
-                      <LinkIcon size={16} />
-                    </a>
-                  )}
-                </div>
-                <p style={{ margin: '0 0 1rem 0', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                  {task.description}
-                </p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem' }}>
-                  <span style={{ backgroundColor: 'var(--bg-color)', padding: '0.2rem 0.5rem', borderRadius: '12px', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {task.assignees?.map(a => users.find(u => u.email === a)?.displayName || a).join(', ') || 'Sin asignar'}
-                  </span>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '1rem', minHeight: '60vh' }}>
+          {columns.map(col => (
+            <Droppable droppableId={col.id} key={col.id}>
+              {(provided, snapshot) => (
+                <div 
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  style={{ 
+                    flex: '1', 
+                    minWidth: '300px', 
+                    backgroundColor: snapshot.isDraggingOver ? 'rgba(0, 180, 216, 0.05)' : 'rgba(255, 255, 255, 0.03)', 
+                    borderRadius: 'var(--border-radius)', 
+                    padding: '1rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1rem',
+                    transition: 'background-color 0.2s ease'
+                  }}
+                >
+                  <h3 style={{ fontSize: '1.1rem', margin: '0 0 0.5rem 0', color: 'var(--text-secondary)' }}>
+                    {col.title} ({sortedVisibleTasks.filter(t => t.status === col.id).length})
+                  </h3>
                   
-                  {task.etaStart && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: 'var(--text-secondary)' }}>
-                      <Calendar size={14} />
-                      {task.etaStart.substring(5)} {task.etaEnd && task.etaStart !== task.etaEnd && `- ${task.etaEnd.substring(5)}`}
-                    </div>
-                  )}
-                </div>
+                  {sortedVisibleTasks.filter(t => t.status === col.id).map((task, index) => (
+                    <Draggable key={task.id} draggableId={task.id} index={index}>
+                      {(provided, snapshot) => (
+                        <div 
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          onClick={() => openEditTask(task)}
+                          style={{ 
+                            backgroundColor: snapshot.isDragging ? '#1a3a4c' : '#112b38',
+                            padding: '1rem', 
+                            borderRadius: 'var(--border-radius)', 
+                            boxShadow: snapshot.isDragging ? '0 8px 16px rgba(0,0,0,0.2)' : '0 2px 4px rgba(0,0,0,0.05)',
+                            cursor: 'grab',
+                            borderLeft: `4px solid ${col.id === 'todo' ? '#ffb3ba' : col.id === 'inprogress' ? '#ffffba' : '#baffc9'}`,
+                            ...provided.draggableProps.style,
+                            opacity: snapshot.isDragging ? 0.9 : 1
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                            <strong>{task.title}</strong>
+                            {task.driveLink && (
+                              <a href={task.driveLink} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)' }} onClick={e => e.stopPropagation()}>
+                                <LinkIcon size={16} />
+                              </a>
+                            )}
+                          </div>
+                          <p style={{ margin: '0 0 1rem 0', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                            {task.description}
+                          </p>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem' }}>
+                            <span style={{ backgroundColor: 'var(--bg-color)', padding: '0.2rem 0.5rem', borderRadius: '12px', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {task.assignees?.map(a => users.find(u => u.email === a)?.displayName || a).join(', ') || 'Sin asignar'}
+                            </span>
+                            
+                            {task.etaStart && (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: 'var(--text-secondary)' }}>
+                                <Calendar size={14} />
+                                {task.etaStart.substring(5)} {task.etaEnd && task.etaStart !== task.etaEnd && `- ${task.etaEnd.substring(5)}`}
+                              </div>
+                            )}
+                          </div>
 
-                {task.subtasks && task.subtasks.length > 0 && (
-                  <div style={{ marginTop: '1rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.2rem' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <CheckSquare size={12} /> {task.subtasks.filter(st => st.completed).length}/{task.subtasks.length}
-                      </span>
-                      <span>{Math.round((task.subtasks.filter(st => st.completed).length / task.subtasks.length) * 100)}%</span>
-                    </div>
-                    <div style={{ width: '100%', height: '6px', backgroundColor: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-                      <div style={{ 
-                        width: `${(task.subtasks.filter(st => st.completed).length / task.subtasks.length) * 100}%`, 
-                        height: '100%', 
-                        backgroundColor: '#add8e6', /* Pastel blue */
-                        transition: 'width 0.3s ease'
-                      }} />
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+                          {task.subtasks && task.subtasks.length > 0 && (
+                            <div style={{ marginTop: '1rem' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.2rem' }}>
+                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                  <CheckSquare size={12} /> {task.subtasks.filter(st => st.completed).length}/{task.subtasks.length}
+                                </span>
+                                <span>{Math.round((task.subtasks.filter(st => st.completed).length / task.subtasks.length) * 100)}%</span>
+                              </div>
+                              <div style={{ width: '100%', height: '6px', backgroundColor: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+                                <div style={{ 
+                                  width: `${(task.subtasks.filter(st => st.completed).length / task.subtasks.length) * 100}%`, 
+                                  height: '100%', 
+                                  backgroundColor: '#add8e6',
+                                  transition: 'width 0.3s ease'
+                                }} />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          ))}
+        </div>
+      </DragDropContext>
 
       <TaskModal 
         isOpen={isModalOpen} 
@@ -185,3 +241,4 @@ const Board = () => {
 };
 
 export default Board;
+
