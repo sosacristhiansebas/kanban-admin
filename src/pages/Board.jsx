@@ -178,7 +178,7 @@ const Board = () => {
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                             <strong>{task.title}</strong>
                             {task.driveLink && (
-                              <a href={task.driveLink} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)' }} onClick={e => e.stopPropagation()}>
+                              <a href={task.driveLink} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)' }} onClick={e => e.stopPropagation()}>
                                 <LinkIcon size={16} />
                               </a>
                             )}

@@ -166,6 +166,7 @@ button {
   transition: border-color 0.2s;
   background-color: var(--bg-color);
   color: var(--text-primary);
+  color-scheme: dark;
 }
 
 .form-control:focus {
