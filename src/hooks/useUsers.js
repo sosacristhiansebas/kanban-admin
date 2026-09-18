@@ -9,10 +9,15 @@ export const useUsers = () => {
   useEffect(() => {
     const q = query(collection(db, 'users'), orderBy('displayName'));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const usersData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const usersData = querySnapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        .filter(user => 
+          user.email !== 'sosacristhiansebas@gmail.com' && 
+          user.email !== 'csosa@nowvertical-es.com'
+        );
       setUsers(usersData);
       setLoading(false);
     }, (error) => {
