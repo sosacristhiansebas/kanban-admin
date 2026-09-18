@@ -21,6 +21,7 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
   const [newComment, setNewComment] = useState('');
   const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   useEffect(() => {
     if (task) {
@@ -74,10 +75,22 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
   };
 
   const handleToggleSubtask = (subId) => {
-    setFormData(prev => ({
-      ...prev,
-      subtasks: prev.subtasks.map(st => st.id === subId ? { ...st, completed: !st.completed } : st)
-    }));
+    setFormData(prev => {
+      const newSubtasks = prev.subtasks.map(st => st.id === subId ? { ...st, completed: !st.completed } : st);
+      
+      const allCompletedNow = newSubtasks.length > 0 && newSubtasks.every(st => st.completed);
+      const allCompletedBefore = prev.subtasks.length > 0 && prev.subtasks.every(st => st.completed);
+      
+      if (allCompletedNow && !allCompletedBefore) {
+        setShowCelebration(true);
+        setTimeout(() => setShowCelebration(false), 2000);
+      }
+
+      return {
+        ...prev,
+        subtasks: newSubtasks
+      };
+    });
   };
 
   const handleDeleteSubtask = (subId) => {
@@ -127,7 +140,28 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
 
   return (
     <div className="modal-overlay" onClick={onClose} style={{ zIndex: 1000, overflowY: 'auto' }}>
-      <div className="modal-content" onClick={e => e.stopPropagation()} style={{ margin: '2rem auto', maxWidth: '600px' }}>
+      <div className="modal-content" onClick={e => e.stopPropagation()} style={{ margin: '2rem auto', maxWidth: '600px', position: 'relative' }}>
+        {showCelebration && (
+          <div style={{
+            position: 'absolute',
+            top: '-20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: '#dcfce7',
+            color: '#166534',
+            padding: '0.5rem 1.5rem',
+            borderRadius: '20px',
+            fontWeight: 'bold',
+            boxShadow: 'var(--shadow-md)',
+            zIndex: 1100,
+            animation: 'fadeInOut 2s ease-in-out forwards',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}>
+            🎉 ¡Good Job!
+          </div>
+        )}
         <div className="modal-header">
           <h2 className="modal-title">{task ? 'Editar Tarea' : 'Nueva Tarea'}</h2>
           <button className="modal-close" onClick={onClose}><X size={24} /></button>
