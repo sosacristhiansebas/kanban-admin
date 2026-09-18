@@ -192,7 +192,33 @@ const Board = () => {
                             </span>
                             
                             {task.etaStart && (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: 'var(--text-secondary)' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: (task.status !== 'done' && task.etaEnd) ? (() => {
+                                const end = new Date(`${task.etaEnd}T00:00:00`);
+                                const today = new Date();
+                                today.setHours(0,0,0,0);
+                                
+                                // Calculate business days difference manually to avoid requiring new imports
+                                // but we do have date-fns. Let's just use simple ms difference to see how many days
+                                // actually the user requested business days.
+                                let diffDays = 0;
+                                let current = new Date(today);
+                                // If end is before today, diff is negative.
+                                if (end < today) {
+                                  return '#ff4d4d'; // Rojo intenso (vencida)
+                                }
+                                
+                                while (current < end) {
+                                  current.setDate(current.getDate() + 1);
+                                  const dayOfWeek = current.getDay();
+                                  if (dayOfWeek !== 0 && dayOfWeek !== 6) { // not Sunday (0) and not Saturday (6)
+                                    diffDays++;
+                                  }
+                                }
+
+                                if (diffDays <= 1) return '#ff4d4d'; // Rojo intenso (1 día o menos)
+                                if (diffDays === 2) return '#ff8a8a'; // Rojita (2 días)
+                                return 'var(--text-secondary)';
+                              })() : 'var(--text-secondary)' }}>
                                 <Calendar size={14} />
                                 {task.etaStart.substring(5)} {task.etaEnd && task.etaStart !== task.etaEnd && `- ${task.etaEnd.substring(5)}`}
                               </div>
