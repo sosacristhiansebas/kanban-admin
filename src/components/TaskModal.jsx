@@ -143,18 +143,19 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
       <div className="modal-content" onClick={e => e.stopPropagation()} style={{ margin: '2rem auto', maxWidth: '600px', position: 'relative' }}>
         {showCelebration && (
           <div style={{
-            position: 'absolute',
-            top: '-20px',
+            position: 'fixed',
+            top: '50%',
             left: '50%',
-            transform: 'translateX(-50%)',
+            transform: 'translate(-50%, -50%)',
             backgroundColor: '#dcfce7',
             color: '#166534',
-            padding: '0.5rem 1.5rem',
-            borderRadius: '20px',
+            padding: '1rem 2rem',
+            borderRadius: '30px',
             fontWeight: 'bold',
-            boxShadow: 'var(--shadow-md)',
-            zIndex: 1100,
-            animation: 'fadeInOut 2s ease-in-out forwards',
+            fontSize: '1.2rem',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+            zIndex: 9999,
+            animation: 'fadeInOutCenter 2s ease-in-out forwards',
             display: 'flex',
             alignItems: 'center',
             gap: '0.5rem'
