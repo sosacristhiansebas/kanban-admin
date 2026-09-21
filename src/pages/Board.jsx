@@ -3,7 +3,7 @@ import { useTasks } from '../hooks/useTasks';
 import { useAuth } from '../contexts/AuthContext';
 import { useUsers } from '../hooks/useUsers';
 import TaskModal from '../components/TaskModal';
-import { Plus, Link as LinkIcon, Calendar, CheckSquare } from 'lucide-react';
+import { Plus, Link as LinkIcon, Calendar, CheckSquare, Lightbulb, X } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 const Board = () => {
@@ -12,6 +12,7 @@ const Board = () => {
   const { isAdmin, currentUser, filterUser, setFilterUser } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [showInfoBox, setShowInfoBox] = useState(true);
 
   if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Cargando tareas...</div>;
 
@@ -120,6 +121,7 @@ const Board = () => {
                 onChange={(e) => setFilterUser(e.target.value)}
               >
                 <option value="">Todos los integrantes</option>
+                <option value="sosacristhiansebas@gmail.com">Admin</option>
                 {users.map(u => (
                   <option key={u.email} value={u.email}>{u.displayName || u.email}</option>
                 ))}
@@ -254,6 +256,53 @@ const Board = () => {
           ))}
         </div>
       </DragDropContext>
+
+      {showInfoBox && (
+        <div style={{
+          position: 'fixed',
+          bottom: '2rem',
+          right: '2rem',
+          width: '300px',
+          backgroundColor: 'rgba(220, 53, 69, 0.1)',
+          border: '1px solid rgba(220, 53, 69, 0.3)',
+          borderRadius: 'var(--border-radius)',
+          padding: '1rem',
+          display: 'flex',
+          gap: '0.8rem',
+          alignItems: 'flex-start',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.2)',
+          zIndex: 50,
+          backdropFilter: 'blur(4px)'
+        }}>
+          <button 
+            onClick={() => setShowInfoBox(false)}
+            style={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              background: 'none',
+              border: 'none',
+              color: 'rgba(220, 53, 69, 0.5)',
+              cursor: 'pointer',
+              padding: '2px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'color 0.2s ease'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.color = 'rgba(220, 53, 69, 1)'}
+            onMouseOut={(e) => e.currentTarget.style.color = 'rgba(220, 53, 69, 0.5)'}
+            title="Cerrar"
+          >
+            <X size={14} />
+          </button>
+          <Lightbulb size={24} style={{ color: '#ff4d4d', flexShrink: 0, marginTop: '2px' }} />
+          <div style={{ fontSize: '0.9rem', lineHeight: '1.4', color: 'var(--text-secondary)' }}>
+            <strong style={{ color: '#ff4d4d', display: 'block', marginBottom: '0.4rem', fontSize: '1rem' }}>¿Idea o Problema?</strong>
+            Crea una nueva tarjeta, describe tu pedido y pon a <strong style={{ color: 'inherit' }}>Admin</strong> como Responsable.
+          </div>
+        </div>
+      )}
 
       <TaskModal 
         isOpen={isModalOpen} 

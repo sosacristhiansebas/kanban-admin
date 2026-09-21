@@ -203,7 +203,7 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
                   checked={formData.assignees.includes('sosacristhiansebas@gmail.com')}
                   onChange={() => handleAssigneeChange('sosacristhiansebas@gmail.com')}
                 />
-                <span style={{ fontWeight: 'bold', color: 'var(--primary-color, #0d6efd)' }}>Admin</span>
+                <span style={{ fontWeight: 'bold' }}>Admin</span>
               </label>
               {users.map(user => (
                 <label key={user.email} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
