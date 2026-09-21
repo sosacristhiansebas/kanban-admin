@@ -197,6 +197,14 @@ const TaskModal = ({ isOpen, onClose, onSave, task = null, onDelete }) => {
           <div className="form-group">
             <label className="form-label">Responsables</label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', maxHeight: '120px', overflowY: 'auto', padding: '0.5rem', border: '1px solid var(--border-color)', borderRadius: '4px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                <input 
+                  type="checkbox" 
+                  checked={formData.assignees.includes('sosacristhiansebas@gmail.com')}
+                  onChange={() => handleAssigneeChange('sosacristhiansebas@gmail.com')}
+                />
+                <span style={{ fontWeight: 'bold', color: 'var(--primary-color, #0d6efd)' }}>Admin</span>
+              </label>
               {users.map(user => (
                 <label key={user.email} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
                   <input 
