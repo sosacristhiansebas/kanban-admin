@@ -3,7 +3,8 @@ import { useTasks } from '../hooks/useTasks';
 import { useAuth } from '../contexts/AuthContext';
 import { useUsers } from '../hooks/useUsers';
 import TaskModal from '../components/TaskModal';
-import { Plus, Link as LinkIcon, Calendar, CheckSquare, Lightbulb, X } from 'lucide-react';
+import KanbanGuideDrawer from '../components/KanbanGuideDrawer';
+import { Plus, Link as LinkIcon, Calendar, CheckSquare, Lightbulb, X, HelpCircle } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 const Board = () => {
@@ -13,6 +14,7 @@ const Board = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [showInfoBox, setShowInfoBox] = useState(true);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
 
   if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Cargando tareas...</div>;
 
@@ -129,9 +131,29 @@ const Board = () => {
             </div>
           )}
         </div>
-        <button className="btn btn-primary" onClick={openNewTask}>
-          <Plus size={18} /> Nueva Tarea
-        </button>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <button 
+            className="btn btn-secondary" 
+            onClick={() => setIsGuideOpen(true)}
+            title="Guía Kanban"
+            style={{ padding: '0.6rem', position: 'relative' }}
+          >
+            <HelpCircle size={18} />
+            <span style={{
+              position: 'absolute',
+              top: '-2px',
+              right: '-2px',
+              width: '10px',
+              height: '10px',
+              backgroundColor: '#ff4d4d',
+              borderRadius: '50%',
+              border: '2px solid var(--bg-color)'
+            }}></span>
+          </button>
+          <button className="btn btn-primary" onClick={openNewTask}>
+            <Plus size={18} /> Nueva Tarea
+          </button>
+        </div>
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
@@ -310,6 +332,11 @@ const Board = () => {
         onSave={handleSaveTask}
         task={editingTask}
         onDelete={deleteTask}
+      />
+
+      <KanbanGuideDrawer 
+        isOpen={isGuideOpen}
+        onClose={() => setIsGuideOpen(false)}
       />
     </div>
   );
