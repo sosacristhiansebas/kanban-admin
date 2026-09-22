@@ -114,7 +114,35 @@ const Board = () => {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
-          <h2>Tablero Kanban</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+            <h2 style={{ margin: 0 }}>Tablero Kanban</h2>
+            <button 
+              className="btn btn-secondary" 
+              onClick={() => {
+                setIsGuideOpen(true);
+                if (!hasSeenGuide) {
+                  setHasSeenGuide(true);
+                  localStorage.setItem('hasSeenGuide_v1', 'true');
+                }
+              }}
+              title="Guía Kanban y Novedades"
+              style={{ padding: '0.4rem', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', width: '32px', height: '32px' }}
+            >
+              <HelpCircle size={18} />
+              {!hasSeenGuide && (
+                <span style={{
+                  position: 'absolute',
+                  top: '-2px',
+                  right: '-2px',
+                  width: '10px',
+                  height: '10px',
+                  backgroundColor: '#ff4d4d',
+                  borderRadius: '50%',
+                  border: '2px solid var(--bg-color)'
+                }}></span>
+              )}
+            </button>
+          </div>
           {isAdmin && (
             <div style={{ marginTop: '0.5rem' }}>
               <select 
@@ -133,32 +161,6 @@ const Board = () => {
           )}
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <button 
-            className="btn btn-secondary" 
-            onClick={() => {
-              setIsGuideOpen(true);
-              if (!hasSeenGuide) {
-                setHasSeenGuide(true);
-                localStorage.setItem('hasSeenGuide_v1', 'true');
-              }
-            }}
-            title="Guía Kanban y Novedades"
-            style={{ padding: '0.6rem', position: 'relative' }}
-          >
-            <HelpCircle size={18} />
-            {!hasSeenGuide && (
-              <span style={{
-                position: 'absolute',
-                top: '-2px',
-                right: '-2px',
-                width: '10px',
-                height: '10px',
-                backgroundColor: '#ff4d4d',
-                borderRadius: '50%',
-                border: '2px solid var(--bg-color)'
-              }}></span>
-            )}
-          </button>
           <button className="btn btn-primary" onClick={openNewTask}>
             <Plus size={18} /> Nueva Tarea
           </button>

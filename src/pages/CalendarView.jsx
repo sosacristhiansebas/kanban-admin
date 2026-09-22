@@ -3,7 +3,17 @@ import { useTasks } from '../hooks/useTasks';
 import { useAuth } from '../contexts/AuthContext';
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, format, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';const argHolidays = [
+  '01-01', // Año Nuevo
+  '03-24', // Día Nacional de la Memoria por la Verdad y la Justicia
+  '04-02', // Día del Veterano y de los Caídos en la Guerra de Malvinas
+  '05-01', // Día del Trabajador
+  '05-25', // Día de la Revolución de Mayo
+  '06-20', // Paso a la Inmortalidad del Gral. Manuel Belgrano
+  '07-09', // Día de la Independencia
+  '12-08', // Día de la Inmaculada Concepción de María
+  '12-25', // Navidad
+];
 
 const CalendarView = () => {
   const { tasks, loading } = useTasks();
@@ -72,7 +82,14 @@ const CalendarView = () => {
         {/* Días del calendario */}
         {days.map(day => {
           const dayStr = format(day, 'yyyy-MM-dd');
-          const dayTasks = visibleTasks.filter(t => t.etaStart && t.etaEnd && dayStr >= t.etaStart && dayStr <= t.etaEnd);
+          const mmdd = format(day, 'MM-dd');
+          const isWeekend = day.getDay() === 0 || day.getDay() === 6;
+          const isHoliday = argHolidays.includes(mmdd);
+          
+          let dayTasks = [];
+          if (!isWeekend && !isHoliday) {
+            dayTasks = visibleTasks.filter(t => t.etaStart && t.etaEnd && dayStr >= t.etaStart && dayStr <= t.etaEnd);
+          }
           
           return (
             <div 
@@ -115,7 +132,7 @@ const CalendarView = () => {
                       overflow: 'hidden',
                       textOverflow: 'ellipsis'
                     }}
-                    title={task.title}
+                    title={task.description || 'Sin descripción'}
                   >
                     {task.title}
                   </div>
