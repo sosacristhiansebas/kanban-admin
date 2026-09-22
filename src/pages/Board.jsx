@@ -15,6 +15,7 @@ const Board = () => {
   const [editingTask, setEditingTask] = useState(null);
   const [showInfoBox, setShowInfoBox] = useState(true);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [hasSeenGuide, setHasSeenGuide] = useState(() => localStorage.getItem('hasSeenGuide_v1') === 'true');
 
   if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Cargando tareas...</div>;
 
@@ -134,21 +135,29 @@ const Board = () => {
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <button 
             className="btn btn-secondary" 
-            onClick={() => setIsGuideOpen(true)}
-            title="Guía Kanban"
+            onClick={() => {
+              setIsGuideOpen(true);
+              if (!hasSeenGuide) {
+                setHasSeenGuide(true);
+                localStorage.setItem('hasSeenGuide_v1', 'true');
+              }
+            }}
+            title="Guía Kanban y Novedades"
             style={{ padding: '0.6rem', position: 'relative' }}
           >
             <HelpCircle size={18} />
-            <span style={{
-              position: 'absolute',
-              top: '-2px',
-              right: '-2px',
-              width: '10px',
-              height: '10px',
-              backgroundColor: '#ff4d4d',
-              borderRadius: '50%',
-              border: '2px solid var(--bg-color)'
-            }}></span>
+            {!hasSeenGuide && (
+              <span style={{
+                position: 'absolute',
+                top: '-2px',
+                right: '-2px',
+                width: '10px',
+                height: '10px',
+                backgroundColor: '#ff4d4d',
+                borderRadius: '50%',
+                border: '2px solid var(--bg-color)'
+              }}></span>
+            )}
           </button>
           <button className="btn btn-primary" onClick={openNewTask}>
             <Plus size={18} /> Nueva Tarea
