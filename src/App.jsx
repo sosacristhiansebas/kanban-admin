@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
-import { LayoutDashboard, Calendar as CalendarIcon, LogOut } from 'lucide-react';
+import { LayoutDashboard, Calendar as CalendarIcon, LogOut, CheckSquare } from 'lucide-react';
 import Login from './pages/Login';
 import Board from './pages/Board';
 import CalendarView from './pages/CalendarView';
 import Dashboard from './pages/Dashboard';
 import VersionChecker from './components/VersionChecker';
+import DailyTasksSidebar from './components/DailyTasksSidebar';
 import { PieChart } from 'lucide-react';
 
 const PrivateRoute = ({ children }) => {
@@ -18,6 +19,7 @@ const PrivateRoute = ({ children }) => {
 const App = () => {
   const { currentUser, logout, isAdmin } = useAuth();
   const location = useLocation();
+  const [isDailyTasksOpen, setIsDailyTasksOpen] = useState(false);
 
   return (
     <div className="app-container">
@@ -52,39 +54,55 @@ const App = () => {
             <button className="btn btn-secondary" onClick={logout} style={{ padding: '0.4rem 0.8rem', fontSize: '0.9rem' }}>
               <LogOut size={16} /> Salir
             </button>
+            <button 
+              className={`btn ${isDailyTasksOpen ? 'btn-primary' : 'btn-secondary'}`} 
+              onClick={() => setIsDailyTasksOpen(!isDailyTasksOpen)} 
+              style={{ padding: '0.4rem 0.8rem', fontSize: '0.9rem', marginLeft: '0.5rem' }} 
+              title="Mis Tareas"
+            >
+              <CheckSquare size={16} />
+            </button>
           </div>
         </nav>
       )}
 
-      <main className="main-content">
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route 
-            path="/dashboard" 
-            element={
-              <PrivateRoute>
-                {isAdmin ? <Dashboard /> : <Navigate to="/" />}
-              </PrivateRoute>
-            } 
+      <div className="app-body">
+        <main className="main-content">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route 
+              path="/dashboard" 
+              element={
+                <PrivateRoute>
+                  {isAdmin ? <Dashboard /> : <Navigate to="/" />}
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/" 
+              element={
+                <PrivateRoute>
+                  <Board />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/calendar" 
+              element={
+                <PrivateRoute>
+                  <CalendarView />
+                </PrivateRoute>
+              } 
+            />
+          </Routes>
+        </main>
+        {currentUser && (
+          <DailyTasksSidebar 
+            isOpen={isDailyTasksOpen} 
+            onClose={() => setIsDailyTasksOpen(false)} 
           />
-          <Route 
-            path="/" 
-            element={
-              <PrivateRoute>
-                <Board />
-              </PrivateRoute>
-            } 
-          />
-          <Route 
-            path="/calendar" 
-            element={
-              <PrivateRoute>
-                <CalendarView />
-              </PrivateRoute>
-            } 
-          />
-        </Routes>
-      </main>
+        )}
+      </div>
     </div>
   );
 };

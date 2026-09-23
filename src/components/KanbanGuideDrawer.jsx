@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Inbox, LayoutTemplate, CalendarCheck } from 'lucide-react';
+import { X, Inbox, LayoutTemplate, CalendarCheck, CheckSquare, Sparkles } from 'lucide-react';
 import './KanbanGuideDrawer.css';
 
 const KanbanGuideDrawer = ({ isOpen, onClose }) => {
@@ -17,6 +17,13 @@ const KanbanGuideDrawer = ({ isOpen, onClose }) => {
 
         <div className="drawer-content">
           <div className="guide-section">
+            <div className="guide-text-block highlight-new" style={{ backgroundColor: 'rgba(0, 180, 216, 0.1)', border: '1px solid var(--secondary-color)', borderRadius: '8px', padding: '1rem', marginBottom: '1rem' }}>
+              <h3 style={{ color: 'var(--secondary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Sparkles size={18} /> ¡Nuevo! Mis Tareas (Agenda)
+              </h3>
+              <p>Acabamos de sumar una agenda personal. Haz clic en el icono <CheckSquare size={14} style={{ display: 'inline', verticalAlign: 'middle' }} /> arriba a la derecha para anotar esas tareas diarias y cortas que no necesitan ir al tablero general. ¡Solo tú puedes verlas!</p>
+            </div>
+
             <div className="guide-text-block active">
               <h3><Inbox size={18} className="guide-icon" /> Por Hacer (Bandeja)</h3>
               <p>Si lo tienes en mente, entonces colócalo aquí. Registra tus tareas pendientes en cualquier lugar y momento.</p>
