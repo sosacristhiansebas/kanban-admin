@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Board from './pages/Board';
 import CalendarView from './pages/CalendarView';
 import Dashboard from './pages/Dashboard';
+import VersionChecker from './components/VersionChecker';
 import { PieChart } from 'lucide-react';
 
 const PrivateRoute = ({ children }) => {
@@ -20,6 +21,7 @@ const App = () => {
 
   return (
     <div className="app-container">
+      <VersionChecker />
       {currentUser && (
         <nav className="navbar">
           <div className="navbar-brand">Team Administración y Finanzas</div>
