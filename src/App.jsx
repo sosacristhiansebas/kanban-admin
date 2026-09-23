@@ -24,16 +24,11 @@ const App = () => {
       <VersionChecker />
       {currentUser && (
         <nav className="navbar">
-          <div className="navbar-brand">Team Administración y Finanzas</div>
+          <div className="navbar-brand" style={{ display: 'flex', alignItems: 'center' }}>
+            <img src="/favicon.svg" alt="Logo" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+            Kanban
+          </div>
           <div className="navbar-nav">
-            {isAdmin && (
-              <Link 
-                to="/dashboard" 
-                className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}
-              >
-                <PieChart size={18} /> Dashboard
-              </Link>
-            )}
             <Link 
               to="/" 
               className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
@@ -46,6 +41,14 @@ const App = () => {
             >
               <CalendarIcon size={18} /> Calendario
             </Link>
+            {isAdmin && (
+              <Link 
+                to="/dashboard" 
+                className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}
+              >
+                <PieChart size={18} /> Dashboard
+              </Link>
+            )}
             <button className="btn btn-secondary" onClick={logout} style={{ padding: '0.4rem 0.8rem', fontSize: '0.9rem' }}>
               <LogOut size={16} /> Salir
             </button>
