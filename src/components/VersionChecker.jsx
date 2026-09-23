@@ -1,35 +1,46 @@
 import React, { useEffect, useState } from 'react';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { db } from '../config/firebase';
 import './VersionChecker.css';
 
 const VersionChecker = () => {
   const [showReload, setShowReload] = useState(false);
   const [initialVersion, setInitialVersion] = useState(null);
 
-  useEffect(() => {
-    // Escuchar el documento "app" en la colección "settings"
-    const docRef = doc(db, 'settings', 'app');
-    
-    const unsubscribe = onSnapshot(docRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.data();
-        const currentVersion = data.version;
-
-        if (initialVersion === null) {
-          // Primera vez que carga, guardamos la versión inicial
-          setInitialVersion(currentVersion);
-        } else if (currentVersion > initialVersion) {
-          // Si la versión en la BD es mayor a la inicial, mostramos el aviso
-          setShowReload(true);
+  const checkVersion = async () => {
+    try {
+      // Agregamos un timestamp para que el navegador no cachee esta petición
+      const res = await fetch(`/version.json?t=${Date.now()}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      
+      setInitialVersion((prevInitial) => {
+        if (prevInitial === null) {
+          return data.version; // Guardamos la primera versión
+        } else if (data.version && data.version !== prevInitial) {
+          setShowReload(true); // Detectamos una versión diferente!
+          return prevInitial;
         }
-      }
-    }, (error) => {
-      console.error("Error escuchando la versión de la app:", error);
-    });
+        return prevInitial;
+      });
+    } catch (error) {
+      console.error("Error comprobando la versión de la app:", error);
+    }
+  };
 
-    return () => unsubscribe();
-  }, [initialVersion]);
+  useEffect(() => {
+    // Comprobar al cargar el componente
+    checkVersion();
+
+    // Comprobar cada vez que el usuario vuelve a hacer foco en la pestaña
+    window.addEventListener('focus', checkVersion);
+    
+    // Comprobar periódicamente (ej: cada 15 minutos) por si dejan la pestaña abierta y activa
+    const intervalId = setInterval(checkVersion, 15 * 60 * 1000);
+
+    return () => {
+      window.removeEventListener('focus', checkVersion);
+      clearInterval(intervalId);
+    };
+  }, []);
 
   if (!showReload) return null;
 
