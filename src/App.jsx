@@ -5,6 +5,8 @@ import { LayoutDashboard, Calendar as CalendarIcon, LogOut } from 'lucide-react'
 import Login from './pages/Login';
 import Board from './pages/Board';
 import CalendarView from './pages/CalendarView';
+import Dashboard from './pages/Dashboard';
+import { PieChart } from 'lucide-react';
 
 const PrivateRoute = ({ children }) => {
   const { currentUser } = useAuth();
@@ -13,7 +15,7 @@ const PrivateRoute = ({ children }) => {
 };
 
 const App = () => {
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, isAdmin } = useAuth();
   const location = useLocation();
 
   return (
@@ -22,6 +24,14 @@ const App = () => {
         <nav className="navbar">
           <div className="navbar-brand">Team Administración y Finanzas</div>
           <div className="navbar-nav">
+            {isAdmin && (
+              <Link 
+                to="/dashboard" 
+                className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}
+              >
+                <PieChart size={18} /> Dashboard
+              </Link>
+            )}
             <Link 
               to="/" 
               className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
@@ -44,6 +54,14 @@ const App = () => {
       <main className="main-content">
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <PrivateRoute>
+                {isAdmin ? <Dashboard /> : <Navigate to="/" />}
+              </PrivateRoute>
+            } 
+          />
           <Route 
             path="/" 
             element={

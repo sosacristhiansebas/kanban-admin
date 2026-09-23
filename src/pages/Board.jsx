@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useUsers } from '../hooks/useUsers';
 import TaskModal from '../components/TaskModal';
 import KanbanGuideDrawer from '../components/KanbanGuideDrawer';
-import { Plus, Link as LinkIcon, Calendar, CheckSquare, Lightbulb, X, HelpCircle } from 'lucide-react';
+import { Plus, Link as LinkIcon, Calendar, CheckSquare, Lightbulb, X, HelpCircle, Copy } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 const Board = () => {
@@ -32,6 +32,46 @@ const Board = () => {
       // Al agregar una nueva tarea, le damos un orden muy bajo para que aparezca arriba
       return addTask({ ...taskData, order: Date.now() * -1 }); 
     }
+  };
+
+  const handleDuplicateTask = (e, task) => {
+    e.stopPropagation(); // Evitar abrir el modal de edición
+    
+    const today = new Date();
+    const currentMonth = String(today.getMonth() + 1).padStart(2, '0');
+    const currentYear = today.getFullYear();
+    
+    let newEtaStart = task.etaStart;
+    let newEtaEnd = task.etaEnd;
+    
+    if (newEtaStart) {
+      const parts = newEtaStart.split('-');
+      if (parts.length === 3) {
+        newEtaStart = `${currentYear}-${currentMonth}-${parts[2]}`;
+      }
+    }
+    
+    if (newEtaEnd) {
+      const parts = newEtaEnd.split('-');
+      if (parts.length === 3) {
+        newEtaEnd = `${currentYear}-${currentMonth}-${parts[2]}`;
+      }
+    }
+    
+    const newTask = {
+      ...task,
+      title: task.title,
+      status: 'todo', // Creado en la columna Por Hacer
+      etaStart: newEtaStart || '',
+      etaEnd: newEtaEnd || '',
+      order: Date.now() * -1,
+      subtasks: task.subtasks ? task.subtasks.map(st => ({ ...st, completed: false })) : [],
+      comments: []
+    };
+    
+    delete newTask.id; // Para que Firebase cree un ID nuevo
+    
+    addTask(newTask);
   };
 
   const openNewTask = () => {
@@ -212,11 +252,27 @@ const Board = () => {
                         >
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                             <strong>{task.title}</strong>
-                            {task.driveLink && (
-                              <a href={task.driveLink} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)' }} onClick={e => e.stopPropagation()}>
-                                <LinkIcon size={16} />
-                              </a>
-                            )}
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                              <button
+                                onClick={(e) => handleDuplicateTask(e, task)}
+                                title="Duplicar Tarea"
+                                style={{
+                                  background: 'none',
+                                  border: 'none',
+                                  color: 'var(--text-secondary)',
+                                  cursor: 'pointer',
+                                  padding: 0,
+                                  display: 'flex'
+                                }}
+                              >
+                                <Copy size={16} />
+                              </button>
+                              {task.driveLink && (
+                                <a href={task.driveLink} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)' }} onClick={e => e.stopPropagation()}>
+                                  <LinkIcon size={16} />
+                                </a>
+                              )}
+                            </div>
                           </div>
                           <p style={{ margin: '0 0 1rem 0', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                             {task.description}
