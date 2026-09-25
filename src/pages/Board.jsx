@@ -152,7 +152,7 @@ const Board = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div className="board-header">
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
             <h2 style={{ margin: 0 }}>Team Administración y Finanzas</h2>
@@ -208,23 +208,16 @@ const Board = () => {
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <div style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '1rem', minHeight: '60vh' }}>
+        <div className="board-columns">
           {columns.map(col => (
             <Droppable droppableId={col.id} key={col.id}>
               {(provided, snapshot) => (
                 <div 
                   ref={provided.innerRef}
                   {...provided.droppableProps}
+                  className="board-column"
                   style={{ 
-                    flex: '1', 
-                    minWidth: '300px', 
-                    backgroundColor: snapshot.isDraggingOver ? 'rgba(0, 180, 216, 0.05)' : 'rgba(255, 255, 255, 0.03)', 
-                    borderRadius: 'var(--border-radius)', 
-                    padding: '1rem',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '1rem',
-                    transition: 'background-color 0.2s ease'
+                    backgroundColor: snapshot.isDraggingOver ? 'rgba(0, 180, 216, 0.05)' : undefined 
                   }}
                 >
                   <h3 style={{ fontSize: '1.1rem', margin: '0 0 0.5rem 0', color: 'var(--text-secondary)' }}>
