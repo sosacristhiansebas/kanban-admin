@@ -234,7 +234,7 @@ const Board = () => {
                           onClick={() => openEditTask(task)}
                           style={{ 
                             backgroundColor: snapshot.isDragging ? '#1a3a4c' : '#112b38',
-                            padding: '1rem', 
+                            padding: '0.75rem', 
                             borderRadius: 'var(--border-radius)', 
                             boxShadow: snapshot.isDragging ? '0 8px 16px rgba(0,0,0,0.2)' : '0 2px 4px rgba(0,0,0,0.05)',
                             cursor: 'grab',

@@ -115,15 +115,15 @@ button {
   .board-columns {
     margin-left: 0;
     margin-right: 0;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    gap: 0.5rem; /* Tighter gap between columns */
+    padding-left: 0.5rem; /* Tiny padding from edge */
+    padding-right: 0.5rem;
+    gap: 0.5rem;
   }
   
   .board-column {
-    min-width: 90vw; /* Wider columns */
-    max-width: 90vw;
-    padding: 0.5rem; /* Tighter internal padding */
+    min-width: 93vw; /* Take almost all screen width */
+    max-width: 93vw;
+    padding: 0.5rem; 
   }
 }
 
