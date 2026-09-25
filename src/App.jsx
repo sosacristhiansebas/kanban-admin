@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
-import { LayoutDashboard, Calendar as CalendarIcon, LogOut, CheckSquare } from 'lucide-react';
+import { LayoutDashboard, Calendar as CalendarIcon, LogOut, CheckSquare, Menu, X } from 'lucide-react';
 import Login from './pages/Login';
 import Board from './pages/Board';
 import CalendarView from './pages/CalendarView';
@@ -20,6 +20,12 @@ const App = () => {
   const { currentUser, logout, isAdmin } = useAuth();
   const location = useLocation();
   const [isDailyTasksOpen, setIsDailyTasksOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Cierra el menú al navegar
+  React.useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <div className="app-container">
@@ -30,7 +36,15 @@ const App = () => {
             <img src="/favicon.svg" alt="Logo" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
             Kanban
           </div>
-          <div className="navbar-nav">
+          
+          <button 
+            className="mobile-menu-btn" 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+
+          <div className={`navbar-nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
             <Link 
               to="/" 
               className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
