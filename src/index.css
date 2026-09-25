@@ -75,6 +75,25 @@ button {
   overflow-y: auto;
 }
 
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+  }
+  
+  .board-columns {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    gap: 0.8rem;
+  }
+  
+  .board-column {
+    min-width: 88vw;
+    max-width: 88vw;
+  }
+}
+
 /* Navbar */
 .navbar {
   background-color: var(--primary-color);

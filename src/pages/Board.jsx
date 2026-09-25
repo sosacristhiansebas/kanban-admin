@@ -15,7 +15,7 @@ const Board = () => {
   const [editingTask, setEditingTask] = useState(null);
   const [showInfoBox, setShowInfoBox] = useState(true);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
-  const [hasSeenGuide, setHasSeenGuide] = useState(() => localStorage.getItem('hasSeenGuide_v1') === 'true');
+  const [hasSeenGuide, setHasSeenGuide] = useState(() => localStorage.getItem('hasSeenGuide_v2') === 'true');
 
   if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Cargando tareas...</div>;
 
@@ -181,7 +181,7 @@ const Board = () => {
               setIsGuideOpen(true);
               if (!hasSeenGuide) {
                 setHasSeenGuide(true);
-                localStorage.setItem('hasSeenGuide_v1', 'true');
+                localStorage.setItem('hasSeenGuide_v2', 'true');
               }
             }}
             title="Guía Kanban y Novedades"

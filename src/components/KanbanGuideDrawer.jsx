@@ -19,7 +19,14 @@ const KanbanGuideDrawer = ({ isOpen, onClose }) => {
           <div className="guide-section">
             <div className="guide-text-block highlight-new" style={{ backgroundColor: 'rgba(0, 180, 216, 0.1)', border: '1px solid var(--secondary-color)', borderRadius: '8px', padding: '1rem', marginBottom: '1rem' }}>
               <h3 style={{ color: 'var(--secondary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Sparkles size={18} /> ¡Nuevo! Mis Tareas (Agenda)
+                <Sparkles size={18} /> ¡Nuevo! App adaptada a celulares
+              </h3>
+              <p>Ahora puedes ver, gestionar y mover todas tus tarjetas de forma cómoda desde tu teléfono móvil.</p>
+            </div>
+
+            <div className="guide-text-block highlight-new" style={{ backgroundColor: 'rgba(0, 180, 216, 0.1)', border: '1px solid var(--secondary-color)', borderRadius: '8px', padding: '1rem', marginBottom: '1rem' }}>
+              <h3 style={{ color: 'var(--secondary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <CheckSquare size={18} /> Mis Tareas (Agenda)
               </h3>
               <p>Acabamos de sumar una agenda personal. Haz clic en el icono <CheckSquare size={14} style={{ display: 'inline', verticalAlign: 'middle' }} /> arriba a la derecha para anotar esas tareas diarias y cortas que no necesitan ir al tablero general. ¡Solo tú puedes verlas!</p>
             </div>
